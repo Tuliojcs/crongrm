@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cronograma de Estudos - Perito Criminal (Farmácia)</title>
+    <!-- Tailwind CSS para o design -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Phosphor Icons para os ícones -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        /* Animações suaves para abrir/fechar as seções */
+        .accordion-content {
+            transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+        }
+        .accordion-content.expanded {
+            max-height: 2000px; /* Um valor alto o suficiente para acomodar o conteúdo */
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans pb-12 antialiased">
+
+    <!-- Cabeçalho Principal -->
+    <header class="bg-slate-900 text-white pt-12 pb-8 px-4 shadow-md">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center gap-3 mb-2 text-blue-400">
+                <i class="ph ph-shield-check text-4xl"></i>
+                <span class="font-bold tracking-widest uppercase text-sm">PCERJ • Concurso</span>
+            </div>
+            <h1 class="text-3xl md:text-4xl font-extrabold mb-2">Perito Criminal</h1>
+            <p class="text-slate-400 text-lg mb-8 flex items-center gap-2">
+                <i class="ph ph-medal text-xl"></i> Área: Farmácia
+            </p>
+
+            <!-- Painel de Progresso Geral -->
+            <div class="bg-slate-800 rounded-xl p-5 border border-slate-700">
+                <div class="flex justify-between items-end mb-2">
+                    <div>
+                        <p class="text-sm font-medium text-slate-400 uppercase tracking-wider">Progresso Geral</p>
+                        <p class="text-2xl font-bold text-white" id="overall-percentage">0%</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm text-slate-400">Tópicos Estudados</p>
+                        <p class="text-lg font-semibold text-blue-400" id="overall-count">0 de 0</p>
+                    </div>
+                </div>
+                <div class="w-full bg-slate-700 rounded-full h-3 overflow-hidden">
+                    <div id="overall-bar" class="bg-blue-500 h-3 rounded-full transition-all duration-700 ease-out" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 mt-8">
+        <!-- Abas -->
+        <div class="flex p-1 bg-slate-200 rounded-xl mb-8" id="tabs-container">
+            <!-- Renderizado via JS -->
+        </div>
+
+        <!-- Lista de Matérias e Tópicos -->
+        <div class="space-y-4" id="subjects-container">
+            <!-- Renderizado via JS -->
+        </div>
+    </main>
+
+    <script>
+        // Dados do Edital
+        const syllabusData = {
+            gerais: {
+                title: "Conhecimentos Gerais",
+                icon: "ph-book-open",
+                subjects: [
+                    {
+                        name: "Língua Portuguesa",
+                        topics: [
+                            "Elementos de construção do texto e seu sentido (literário, não literário, etc.)",
+                            "Semântica: sentido e emprego dos vocábulos e tempos/modos verbais",
+                            "Morfologia: classes gramaticais e formação de palavras",
+                            "Sintaxe: oração, período, concordância, regência e coesão textual",
+                            "Ortografia",
+                            "Acentuação gráfica",
+                            "Emprego do sinal indicativo de crase",
+                            "Pontuação",
+                            "Reescrita de frases: substituição, deslocamento, paralelismo e norma culta"
+                        ]
+                    },
+                    {
+                        name: "Noções de Direito Constitucional",
+                        topics: [
+                            "Supremacia da Constituição Federal",
+                            "Direitos e deveres individuais e coletivos",
+                            "Administração pública e servidores públicos civis",
+                            "Poder Executivo: forma e sistema de governo; chefias",
+                            "Segurança Pública na CF e na Constituição do RJ",
+                            "Ordem social: base e objetivos"
+                        ]
+                    },
+                    {
+                        name: "Noções de Direito Administrativo",
+                        topics: [
+                            "Conceito de Administração Pública e Ato administrativo",
+                            "Organização administrativa",
+                            "Poderes administrativos (hierárquico, regulamentar, disciplinar e de polícia)",
+                            "Uso e abuso de poder; Limitações do poder de polícia",
+                            "Divisão de polícia",
+                            "Agentes públicos, Cargo, emprego e função pública",
+                            "Estatuto dos Funcionários Públicos Civis do RJ (Dec-Lei nº 220/1975 e Dec nº 2.479/1979)",
+                            "Estatuto dos Policiais Civis do RJ (Dec-Lei nº 218/1975 e Dec nº 3.044/1979)",
+                            "Responsabilidade civil do Estado"
+                        ]
+                    },
+                    {
+                        name: "Noções de Direito Penal",
+                        topics: [
+                            "Fato típico, Dolo e culpa",
+                            "Consumação, tentativa e Crime impossível",
+                            "Crimes contra a pessoa e contra a liberdade individual",
+                            "Crimes contra o patrimônio e dignidade sexual",
+                            "Crimes contra a incolumidade, paz e administração pública",
+                            "Lei de Tortura (Lei nº 9.455/1997) e Lei Antidrogas (Lei nº 11.343/2006)",
+                            "Lei de Abuso de Autoridade (Lei nº 13.869/2019)",
+                            "ECA (Lei nº 8.069/1990) e Lei Maria da Penha (Lei nº 11.340/2006)",
+                            "Estatuto do Idoso, PCD e Crimes de Preconceito/Racismo"
+                        ]
+                    },
+                    {
+                        name: "Noções de Direito Processual Penal",
+                        topics: [
+                            "Garantias constitucionais do Processo Penal",
+                            "Inquérito policial e Auto de resistência",
+                            "Emprego de algemas (Lei nº 13.434/2007 e Lei nº 7.210/1984)",
+                            "Atividade de Polícia Judiciária e Diligências de investigação",
+                            "Atendimento policial e pericial especializado",
+                            "Programa Sinal Vermelho contra a Violência Doméstica",
+                            "Identificação criminal e coleta do perfil genético",
+                            "Prova pericial, Exame de corpo de delito e cadeia de custódia"
+                        ]
+                    }
+                ]
+            },
+            especificos: {
+                title: "Conhecimentos Específicos",
+                icon: "ph-microscope",
+                subjects: [
+                    {
+                        name: "Farmacologia",
+                        topics: [
+                            "Farmacocinética: absorção, distribuição, biotransformação e eliminação",
+                            "Farmacodinâmica: mecanismo de ação, concentração e efeito",
+                            "Sistema nervoso central e autônomo (Transmissão química e ação de drogas)",
+                            "Fármacos ansiolíticos, hipnóticos e neurolépticos",
+                            "Fármacos cardiovasculares e Estimulantes do SNC",
+                            "Dependência e drogas de abuso (álcool, maconha, cocaína, morfina, heroína, LSD)"
+                        ]
+                    },
+                    {
+                        name: "Toxicologia",
+                        topics: [
+                            "Princípios da toxicologia, conceitos e definições",
+                            "Toxicocinética e toxicodinâmica dos inseticidas",
+                            "Toxicocinética e toxicodinâmica dos voláteis",
+                            "Métodos de extração (agentes gasosos, metais pesados, praguicidas, etc.)",
+                            "Metodologias analíticas (HPLC, CG, CG/EM, imunoensaio, Espectrofotometria)",
+                            "Doping e Abuso de substâncias no esporte",
+                            "Métodos analíticos rápidos em Toxicologia Forense"
+                        ]
+                    },
+                    {
+                        name: "Bioquímica, Biologia e Hematologia",
+                        topics: [
+                            "Estrutura e função de ácidos nucleicos; Proteínas e enzimas",
+                            "Hematologia e Imunoematologia (Grupos sanguíneos, sistema ABO)",
+                            "Fatores e Mecanismos da coagulação; Anticoagulantes",
+                            "Hematopoese e Espermatogênese",
+                            "Líquidos de natureza biológica (sangue, saliva, sêmen, humor vítreo, líquor)"
+                        ]
+                    },
+                    {
+                        name: "Química e Farmacognosia",
+                        topics: [
+                            "Amostragem e Métodos de extração, separação e identificação",
+                            "Química analítica qualitativa e quantitativa",
+                            "Técnicas espectroscópicas e Métodos cromatográficos",
+                            "Espectrometria de massas e Análise estatística/quimiométrica",
+                            "Química dos explosivos e arma química",
+                            "Química de produtos naturais e Fármacos alcaloídicos",
+                            "Propriedades farmacodinâmicas de extratos vegetais, animais e minerais"
+                        ]
+                    },
+                    {
+                        name: "Microbiologia, Imunologia e Rádio",
+                        topics: [
+                            "Diversidade microbiana (fungos, bactérias e vírus)",
+                            "Microrganismos patogênicos e Doenças de veiculação hídrica/alimentar",
+                            "Bacteriologia (coliformes, heterotróficas)",
+                            "Armas biológicas e Biossegurança",
+                            "Noções de imunologia",
+                            "Radioquímica"
+                        ]
+                    },
+                    {
+                        name: "Legislação Sanitária e Pericial",
+                        topics: [
+                            "Vigilância Sanitária (Conceitos, áreas e funções)",
+                            "Lei nº 6.360/1976 e Lei nº 10.742/2003 (Lei 5991/73)",
+                            "Portaria SVS/MS nº 344/1998 (Substâncias sujeitas a controle especial)",
+                            "Resoluções da ANVISA (81/2008, 10/2010, 14/2010, 18/2010)",
+                            "Colheita e conservação do material biológico para análise pericial",
+                            "Cadeia de custódia"
+                        ]
+                    }
+                ]
+            }
+        };
+
+        // Estado da Aplicação
+        let activeTab = 'gerais';
+        let studiedTopics = new Set();
+        let expandedSubjects = new Set(['gerais-0']);
+
+        // Carregar dados salvos
+        const savedProgress = localStorage.getItem('pcerj-perito-vanilla-progress');
+        if (savedProgress) {
+            studiedTopics = new Set(JSON.parse(savedProgress));
+        }
+
+        // Funções de salvamento
+        function saveProgress() {
+            localStorage.setItem('pcerj-perito-vanilla-progress', JSON.stringify(Array.from(studiedTopics)));
+            updateProgressUI();
+        }
+
+        // Funções de Interação (Tornadas globais para uso no HTML inline)
+        window.changeTab = function(tabId) {
+            activeTab = tabId;
+            renderTabs();
+            renderSubjects();
+        };
+
+        window.toggleSubject = function(subjectId) {
+            if (expandedSubjects.has(subjectId)) {
+                expandedSubjects.delete(subjectId);
+            } else {
+                expandedSubjects.add(subjectId);
+            }
+            renderSubjects();
+        };
+
+        window.toggleTopic = function(topicId) {
+            if (studiedTopics.has(topicId)) {
+                studiedTopics.delete(topicId);
+            } else {
+                studiedTopics.add(topicId);
+            }
+            saveProgress();
+            renderSubjects(); // Re-renderiza para atualizar os ícones
+        };
+
+        // Cálculos de Progresso
+        function getProgressStats() {
+            let totalTopics = 0;
+            let completedTopics = studiedTopics.size;
+
+            Object.values(syllabusData).forEach(category => {
+                category.subjects.forEach(subject => {
+                    totalTopics += subject.topics.length;
+                });
+            });
+
+            const percentage = totalTopics === 0 ? 0 : Math.round((completedTopics / totalTopics) * 100);
+            return { totalTopics, completedTopics, percentage };
+        }
+
+        function getSubjectProgress(categoryKey, subjectIndex) {
+            const subject = syllabusData[categoryKey].subjects[subjectIndex];
+            let completed = 0;
+            subject.topics.forEach((_, topicIdx) => {
+                if (studiedTopics.has(`${categoryKey}-${subjectIndex}-${topicIdx}`)) {
+                    completed++;
+                }
+            });
+            const percentage = Math.round((completed / subject.topics.length) * 100);
+            return { completed, total: subject.topics.length, percentage };
+        }
+
+        // Atualização Visual
+        function updateProgressUI() {
+            const stats = getProgressStats();
+            document.getElementById('overall-percentage').innerText = `${stats.percentage}%`;
+            document.getElementById('overall-count').innerText = `${stats.completedTopics} de ${stats.totalTopics}`;
+            document.getElementById('overall-bar').style.width = `${stats.percentage}%`;
+        }
+
+        function renderTabs() {
+            const container = document.getElementById('tabs-container');
+            container.innerHTML = '';
+
+            Object.entries(syllabusData).forEach(([key, data]) => {
+                const isActive = activeTab === key;
+                const activeClasses = isActive 
+                    ? 'bg-white text-blue-700 shadow-sm' 
+                    : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50';
+
+                const button = document.createElement('button');
+                button.className = `flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-semibold text-sm transition-all duration-200 ${activeClasses}`;
+                button.onclick = () => window.changeTab(key);
+                button.innerHTML = `<i class="ph ${data.icon} text-lg"></i> ${data.title}`;
+                
+                container.appendChild(button);
+            });
+        }
+
+        function renderSubjects() {
+            const container = document.getElementById('subjects-container');
+            container.innerHTML = '';
+            
+            const subjects = syllabusData[activeTab].subjects;
+
+            subjects.forEach((subject, sIdx) => {
+                const subjectId = `${activeTab}-${sIdx}`;
+                const isExpanded = expandedSubjects.has(subjectId);
+                const progress = getSubjectProgress(activeTab, sIdx);
+                const isFullyComplete = progress.percentage === 100;
+
+                let html = `
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden transition-all duration-300">
+                        <button onclick="window.toggleSubject('${subjectId}')" class="w-full px-5 py-4 flex items-center justify-between bg-white hover:bg-slate-50 transition-colors">
+                            <div class="flex-1 text-left pr-4">
+                                <h3 class="font-bold text-lg text-slate-800 mb-1">${subject.name}</h3>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-32 bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                                        <div class="h-1.5 rounded-full transition-all duration-500 ${isFullyComplete ? 'bg-emerald-500' : 'bg-blue-500'}" style="width: ${progress.percentage}%"></div>
+                                    </div>
+                                    <span class="text-xs font-medium text-slate-500">${progress.completed}/${progress.total} tópicos</span>
+                                </div>
+                            </div>
+                            <div class="text-slate-400">
+                                <i class="ph ${isExpanded ? 'ph-caret-up' : 'ph-caret-down'} text-2xl"></i>
+                            </div>
+                        </button>
+
+                        <div class="border-t border-slate-100 accordion-content ${isExpanded ? 'expanded' : ''}">
+                            <div class="p-2">
+                `;
+
+                subject.topics.forEach((topic, tIdx) => {
+                    const topicId = `${activeTab}-${sIdx}-${tIdx}`;
+                    const isStudied = studiedTopics.has(topicId);
+                    
+                    const buttonClasses = isStudied 
+                        ? 'bg-emerald-50/50 hover:bg-emerald-50' 
+                        : 'hover:bg-slate-50';
+                    const iconClasses = isStudied 
+                        ? 'ph-fill ph-check-circle text-emerald-500' 
+                        : 'ph ph-circle text-slate-300';
+                    const textClasses = isStudied 
+                        ? 'text-slate-500 line-through' 
+                        : 'text-slate-700';
+
+                    html += `
+                        <button onclick="window.toggleTopic('${topicId}')" class="w-full flex items-start gap-3 p-3 rounded-lg text-left transition-colors ${buttonClasses}">
+                            <div class="mt-0.5 flex-shrink-0">
+                                <i class="${iconClasses} text-xl"></i>
+                            </div>
+                            <span class="text-sm leading-relaxed ${textClasses}">${topic}</span>
+                        </button>
+                    `;
+                });
+
+                html += `
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                container.insertAdjacentHTML('beforeend', html);
+            });
+        }
+
+        // Inicialização
+        function init() {
+            updateProgressUI();
+            renderTabs();
+            renderSubjects();
+        }
+
+        // Executar após carregar
+        window.addEventListener('DOMContentLoaded', init);
+
+    </script>
+</body>
+</html>
